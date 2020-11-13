@@ -21,20 +21,24 @@ set guioptions-=r
 
 call plug#begin('~/vimfiles/plugged')
 
+Plug 'nvie/vim-flake8'
 Plug 'eemed/sitruuna.vim'
+Plug 'alvan/vim-closetag'
 Plug 'tpope/vim-commentary'
+Plug 'vim-scripts/indentpython.vim'
 
 call plug#end()
 
-colorscheme sitruuna
-
 let mapleader = " "
+colorscheme sitruuna
 
 nnoremap yank ggVG"+y
 nnoremap <leader>h :wincmd h<CR>
 nnoremap <leader>j :wincmd j<CR>
 nnoremap <leader>k :wincmd k<CR>
 nnoremap <leader>l :wincmd l<CR>
+nnoremap <leader><Left> :bp!<CR>
+nnoremap <leader><Right> :bn!<CR>
 
 vmap <C-c> "+y
 nmap <C-a> ggVG
@@ -43,16 +47,16 @@ imap <C-v> <esc>"+pa
 nmap <C-b> :w <CR>
 imap <C-b> <esc><C-b>
 
-  "Alias
-let $TIME = strftime("%d/%m/%Y %X (%Z)")
+" Python
+autocmd FileType python nmap <buffer> <C-b> :w <bar> call flake8#Flake8()<CR>
+autocmd FileType python imap <buffer> <C-b> <esc><C-b>
+autocmd FileType python nnoremap <buffer> <leader>new VGdi
 
-"CP
-  "Compile Run
+" CP
+  "Compile
 let &makeprg='g++ -std=c++14 -DLOCAL % -o %<'
 autocmd FileType c,cpp nmap <buffer> <C-b> :w\|make\|redraw!\|cw<CR>
 autocmd FileType c,cpp imap <buffer> <C-b> <esc><C-b>
-autocmd FileType c,cpp nmap <buffer> <F10> :!%:r.exe<CR><CR>
-autocmd FileType c,cpp imap <buffer> <F10> <esc><F10>
 
   "Directories
 let $cp = '~\Documents\CP'
@@ -62,10 +66,5 @@ let $T = $cp . '\src\snippets'
 nnoremap <leader>gameon :edit $cp\test.cpp<CR>:e $cp\code.cpp<CR>
 
   "C++
-autocmd FileType c,cpp nnoremap <buffer> <leader>new :-1read $T\main.cpp<CR>18jVGdk<esc><bar>:%s/-1/\=$TIME/<CR>14jo
+autocmd FileType c,cpp nnoremap <buffer> <leader>new :-1read $T\main.cpp<CR>18jVGdk<bar>:%s#-1#\=strftime("%d/%m/%Y %X (%Z)")#<CR>14jo
 autocmd FileType c,cpp nnoremap <buffer> <leader>dbg :-1read $T\debug.cpp<CR>gg
-
-  "Python
-autocmd FileType python nnoremap <buffer> <leader>new VGdi
-
-  "Testing
