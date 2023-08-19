@@ -4,11 +4,12 @@ filetype plugin indent on
 set belloff=all
 set background=dark
 set termguicolors
-set guifont=Consolas
+set guifont=Consolas:h9
 set number relativenumber
 set cindent autoindent
 set smartindent
 set noswapfile
+set modifiable
 set tabstop=2 expandtab shiftwidth=2
 set scrolloff=15
 set nowrap
@@ -18,14 +19,20 @@ set incsearch
 set guioptions-=m
 set guioptions-=T
 set guioptions-=r
+set spelllang=en,de
 
 call plug#begin('~/vimfiles/plugged')
 
-Plug 'nvie/vim-flake8'
 Plug 'eemed/sitruuna.vim'
-Plug 'alvan/vim-closetag'
 Plug 'tpope/vim-commentary'
-Plug 'vim-scripts/indentpython.vim'
+
+Plug 'alvan/vim-closetag'
+let g:closetag_filetypes = 'html,xhtml,phtml,jsx,js'
+let g:closetag_filenames = '.html,.xhtml,.phtml,.jsx,*.js'
+let g:closetag_emptyTags_caseSensitive = 1
+
+Plug 'preservim/nerdtree'
+
 
 call plug#end()
 
@@ -48,8 +55,6 @@ nmap <C-b> :w <CR>
 imap <C-b> <esc><C-b>
 
 " Python
-autocmd FileType python nmap <buffer> <C-b> :w <bar> call flake8#Flake8()<CR>
-autocmd FileType python imap <buffer> <C-b> <esc><C-b>
 autocmd FileType python nnoremap <buffer> <leader>new VGdi
 
 " CP
@@ -59,12 +64,21 @@ autocmd FileType c,cpp nmap <buffer> <C-b> :w\|make\|redraw!\|cw<CR>
 autocmd FileType c,cpp imap <buffer> <C-b> <esc><C-b>
 
   "Directories
-let $cp = '~\Documents\CP'
+let $cp = '~\Documents\cp'
 let $T = $cp . '\src\snippets'
 
-  "Snippets
-nnoremap <leader>gameon :edit $cp\test.cpp<CR>:e $cp\code.cpp<CR>
+  "Variables 
+let $kw = 'DATE'
 
   "C++
-autocmd FileType c,cpp nnoremap <buffer> <leader>new :-1read $T\main.cpp<CR>18jVGdk<bar>:%s#-1#\=strftime("%d/%m/%Y %X (%Z)")#<CR>14jo
-autocmd FileType c,cpp nnoremap <buffer> <leader>dbg :-1read $T\debug.cpp<CR>gg
+autocmd FileType c,cpp nnoremap <buffer> <leader>put :-1read $T\basic.cpp<CR>4jo
+autocmd FileType c,cpp nnoremap <buffer> <leader>new :-1read $T\main.cpp<CR>:execute '%s/' . $kw . '/\=strftime("%d.%m.%Y %H:%M:%S")'<CR>gg18jVGdO
+
+" map <leader>D :put =strftime('%d.%m.%Y %H:%M:%S')<CR>
+
+  "Python
+autocmd FileType python nnoremap <buffer> <leader>new ggVGdi
+  
+  "Text Files
+autocmd FileType txt set wrap linebreak spell
+autocmd BufNewFile,BufRead * if expand('%:t') !~ '\.' | set wrap linebreak spell | endif
